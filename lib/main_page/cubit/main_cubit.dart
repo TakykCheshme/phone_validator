@@ -21,7 +21,6 @@ class MainCubit extends Cubit<MainStateNormal> {
   }
 
   handleMessage(SmsMessage message) async {
-    print('start handleMessage...');
     try {
       final success =
           await network.registerNumber(message.address, message.body);
@@ -29,7 +28,12 @@ class MainCubit extends Cubit<MainStateNormal> {
       results = [...results, result];
       emit(MainStateNormal(results));
     } catch (e) {
-      print(e);
+      final result = RegisterResult(message, false);
+      results = [...results, result];
+      emit(MainStateNormal(results));
+
+      Future.delayed(Duration(seconds: 5));
+      handleMessage(message);
     }
   }
 }

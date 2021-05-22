@@ -26,9 +26,10 @@ class MainPage extends StatelessWidget {
               final success = state.results[index].success;
               return ListTile(
                 title: Text((m.address ?? '') + ' - ' + (m.body ?? '')),
-                subtitle: m.dateSent != null
-                    ? Text(
-                        DateTime.fromMillisecondsSinceEpoch(m.date!).toString())
+                subtitle: m.date != null
+                    ? Text(DateTime.fromMillisecondsSinceEpoch(m.date!)
+                        .toString()
+                        .split('.')[0])
                     : Text('Näbelli'),
                 trailing: Icon(
                   success ? Icons.check : Icons.close,
