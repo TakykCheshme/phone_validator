@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wakelock/wakelock.dart';
 
 import 'cubit/main_cubit.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  @override
+  void initState() {
+    super.initState();
+    Wakelock.enable();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Phone Validator'),
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(Icons.send),
-        //     onPressed: () => context.read<MainCubit>().handleMessage(),
-        //   )
-        // ],
+        title: Text('Phone Verifier'),
       ),
       body: Container(child: BlocBuilder<MainCubit, MainStateNormal>(
         builder: (context, state) {
-          print(state);
           return ListView.builder(
             itemCount: state.results.length,
             itemBuilder: (context, index) {

@@ -24,6 +24,8 @@ class Network {
       'test': 1,
     });
     final response = await _dio.post(REGISTER_NUMBER, data: data);
+    print(response.statusCode);
+    print(response.data);
     if (response.statusCode == 200) return true;
     return false;
   }

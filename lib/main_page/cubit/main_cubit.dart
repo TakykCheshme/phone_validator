@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:phone_validator/models/register_result.dart';
 import 'package:telephony/telephony.dart';
 
+import '../../models/register_result.dart';
 import '../../network.dart';
 
 part 'main_state.dart';
@@ -16,7 +16,6 @@ class MainCubit extends Cubit<MainStateNormal> {
     telephony.listenIncomingSms(
       onNewMessage: handleMessage,
       listenInBackground: false,
-      // TODO Try background message handling
     );
   }
 
@@ -28,11 +27,12 @@ class MainCubit extends Cubit<MainStateNormal> {
       results = [...results, result];
       emit(MainStateNormal(results));
     } catch (e) {
+      print(e);
       final result = RegisterResult(message, false);
       results = [...results, result];
       emit(MainStateNormal(results));
 
-      Future.delayed(Duration(seconds: 5));
+      await Future.delayed(Duration(seconds: 5));
       if (attempt < 25) handleMessage(message, attempt: ++attempt);
     }
   }
