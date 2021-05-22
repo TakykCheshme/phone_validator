@@ -20,7 +20,7 @@ class MainCubit extends Cubit<MainStateNormal> {
     );
   }
 
-  handleMessage(SmsMessage message) async {
+  handleMessage(SmsMessage message, {int attempt = 0}) async {
     try {
       final success =
           await network.registerNumber(message.address, message.body);
@@ -33,7 +33,7 @@ class MainCubit extends Cubit<MainStateNormal> {
       emit(MainStateNormal(results));
 
       Future.delayed(Duration(seconds: 5));
-      handleMessage(message);
+      if (attempt < 25) handleMessage(message, attempt: ++attempt);
     }
   }
 }
