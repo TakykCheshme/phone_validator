@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:phone_validator/models/register_result.dart';
 import 'package:wakelock/wakelock.dart';
 
 import 'cubit/main_cubit.dart';
@@ -22,15 +23,18 @@ class _MainPageState extends State<MainPage> {
       appBar: AppBar(
         title: Text('Phone Verifier'),
       ),
-      body: Container(child: BlocBuilder<MainCubit, MainStateNormal>(
+      body: Container(child: BlocBuilder<MainCubit, List<RegisterResult>>(
         builder: (context, state) {
+
+          var results = state.toList();
+
           return ListView.builder(
-            itemCount: state.results.length,
+            itemCount: results.length,
             itemBuilder: (context, index) {
-              final m = state.results[index].message;
-              final success = state.results[index].success;
+              final m = results[index].message;
+              final success = results[index].success;
               return ListTile(
-                title: Text((m.address ?? '') + ' - ' + (m.body ?? '')),
+                title: Text((m.address) + ' - ' + (m.body)),
                 subtitle: m.date != null
                     ? Text(DateTime.fromMillisecondsSinceEpoch(m.date!)
                         .toString()
