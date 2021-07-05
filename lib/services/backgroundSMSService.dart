@@ -22,6 +22,15 @@ List<RegisterResult> getResults(PersistentStorage prefs){
   ];
 }
 
+
+Future<void> sendIfError( Telephony telephony ){
+
+  return telephony.sendSms(to: '+99364419426', message: 'Phone validator sboy!', statusListener: (_){
+    print(_);
+  });
+
+}
+
 void backgroundSMSService(SmsMessage message)async{
   final prefs = await PersistentStorage.getInstance();
   final previous = [...getResults(prefs)];
@@ -31,13 +40,7 @@ void backgroundSMSService(SmsMessage message)async{
     success = await network.registerNumber(message.address, message.body);
   } catch (e) {
     success = false;
-    await Telephony.backgroundInstance.sendSms(
-      to: '+99365561083', 
-      message: 'Johnnyy, sms app does not work',
-      statusListener: (status){
-        print(status);
-      }
-    );
+    await sendIfError(Telephony.backgroundInstance);
   }
   final newResult = RegisterResult.fromSMS(message, success);
   await saveResults([...previous,newResult]);

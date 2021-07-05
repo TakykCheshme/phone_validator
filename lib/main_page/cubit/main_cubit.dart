@@ -31,13 +31,14 @@ class MainCubit extends Cubit<List<RegisterResult>> {
       final result = RegisterResult.fromSMS(message, success);
       await saveResults([...state, result]);
       emit([...state, result]);
-    } catch (e) {
+    } catch (e){
       print(e);
       final result = RegisterResult.fromSMS(message, false);
       await saveResults([...state, result]);
       emit([...state, result]);
       await Future.delayed(Duration(seconds: 5));
       if (attempt < 25) handleMessage(message, attempt: ++attempt);
+      else await sendIfError(Telephony.instance);
     }
   }
 }
