@@ -1,17 +1,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:phone_validator/models/persistentStorage.dart';
+import 'package:phone_validator/models/settings.dart';
+import 'package:phone_validator/network.dart';
 import 'package:phone_validator/services/backgroundSMSService.dart';
 import 'package:telephony/telephony.dart';
 
 import '../../models/register_result.dart';
-import '../../network.dart';
 
 
 class MainCubit extends Cubit<List<RegisterResult>> {
-  late Network network;
 
   MainCubit() : super([]) {
-    network = Network();
     final telephony = Telephony.instance;
     telephony.listenIncomingSms(
       onNewMessage: handleMessage,
@@ -26,6 +25,8 @@ class MainCubit extends Cubit<List<RegisterResult>> {
 
   void handleMessage(SmsMessage message, {int attempt = 0}) async {
     try {
+      var settings = await Settings.getInstance();
+      var network = Network(settings.baseUrl);
       final success =
           await network.registerNumber(message.address, message.body);
       final result = RegisterResult.fromSMS(message, success);

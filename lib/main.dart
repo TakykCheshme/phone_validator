@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:phone_validator/models/persistentStorage.dart';
+import 'package:phone_validator/models/sizing.dart';
 import 'main_page/cubit/main_cubit.dart';
 import 'main_page/main_page.dart';
 
@@ -23,6 +24,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
 
   void updateData()async{
+    await PersistentStorage.relaunchDataBase();
+    print('app lifecycle changed');
     BlocProvider.of<MainCubit>(context, listen: false).init(await PersistentStorage.getInstance());
   }
 
@@ -46,14 +49,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Phone Validator',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-        accentColor: Colors.amber,
-        brightness: Brightness.dark,
-      ),
-      home: MainPage(),
+    return SizeInitializer(
+      child: MaterialApp(
+         title: 'Phone Validator',
+         theme: ThemeData(
+           primarySwatch: Colors.teal,
+           accentColor: Colors.amber,
+           brightness: Brightness.dark,
+         ),
+         home: MainPage(),
+       ),
     );
   }
 }

@@ -11,19 +11,25 @@ class PersistentStorage{
   static String? _dbPath;
   static const String _dbName = "persistent.db"; 
   static final PersistentStorage _instance = PersistentStorage._();
+  static late Database _database;
+
+  static Future<void> relaunchDataBase()async{
+    if(_dbPath != null)
+      await _database.close();
+    await _init();
+  }
 
   static Future<void> _init()async{
      var dir = await _directory;
       await dir.create(recursive: true);
       _dbPath = join(dir.path,_dbName);
+      _database = await databaseFactoryIo.openDatabase(_dbPath!);
   }
 
   static Future<Map<String,dynamic>> _getNewMap()async{
-    var database = await databaseFactoryIo.openDatabase(_dbPath!);
     var store = StoreRef<String,dynamic>.main();
-    var records = await store.find(database);
+    var records = await store.find(_database);
     var recordsProcessed = Map.fromIterable(records,key: (element) => (element as RecordSnapshot<String,dynamic>).key, value: (element) => (element as RecordSnapshot<String,dynamic>).value);
-    await database.close();
     return recordsProcessed;
   }
 
@@ -41,18 +47,14 @@ class PersistentStorage{
   }
 
   Future<void> setItem<T>(String key, T value)async{
-    var database = await databaseFactoryIo.openDatabase(_dbPath!);
     var store = StoreRef<String,dynamic>.main();
-    await store.record(key).put(database, value);
-    await database.close();
+    await store.record(key).put(_database, value);
     _update(await _getNewMap());
   }
  
   Future<void> remove(String key)async{
-    var database = await databaseFactoryIo.openDatabase(_dbPath!);
     var store = StoreRef<String,dynamic>.main();
-    await store.record(key).delete(database);
-    await database.close();
+    await store.record(key).delete(_database);
     return _update(await _getNewMap());
   } 
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:phone_validator/models/register_result.dart';
+import 'package:phone_validator/settingsScreen.dart';
 import 'package:wakelock/wakelock.dart';
 
 import 'cubit/main_cubit.dart';
@@ -22,6 +23,16 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Phone Verifier'),
+        actions: [
+          IconButton(
+            icon: Icon( Icons.settings, color: Colors.white, ),
+            onPressed: (){
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => SettingsScreen())
+              );
+            },
+          )
+        ],
       ),
       body: Container(child: BlocBuilder<MainCubit, List<RegisterResult>>(
         builder: (context, state) {

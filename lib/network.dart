@@ -2,15 +2,14 @@ import 'dart:io';
 
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
-
-import 'const.dart';
+import 'package:phone_validator/models/settings.dart';
 
 class Network {
   late Dio _dio;
 
-  Network() {
+  Network(String baseUrl) {
     _dio = Dio();
-    _dio.options.baseUrl = BASE_URL;
+    _dio.options.baseUrl = baseUrl;
     _dio.options.sendTimeout = 5000;
     _dio.options.connectTimeout = 5000;
     _dio.options.receiveTimeout = 5000;
@@ -23,17 +22,18 @@ class Network {
   }
 
   Future<bool> registerNumber(String? phoneNumber, String? code) async {
+    var  settings = await Settings.getInstance();
     final data = FormData.fromMap(
        {
-         'gateway_phone': GATEAWAY_PHONE.toString(),
+         'gateway_phone': settings.gateWayPhone.toString(),
          'user_phone': phoneNumber.toString().replaceAll('+', ""),
          'content': code.toString(),
-         'gateway_token':TOKEN
+         'gateway_token':settings.gateWayToken
        }
     );
     Response? response;
     try {
-      response = await _dio.post(REGISTER_NUMBER, data: data);
+      response = await _dio.post(settings.smsPath, data: data);
     } catch (e) {
       print('error $e');
     }

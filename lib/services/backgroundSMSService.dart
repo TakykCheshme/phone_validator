@@ -1,6 +1,7 @@
 import 'package:phone_validator/const.dart';
 import 'package:phone_validator/models/persistentStorage.dart';
 import 'package:phone_validator/models/register_result.dart';
+import 'package:phone_validator/models/settings.dart';
 import 'package:phone_validator/network.dart';
 import 'package:telephony/telephony.dart';
 
@@ -32,16 +33,15 @@ Future<void> sendIfError( Telephony telephony ){
 }
 
 void backgroundSMSService(SmsMessage message)async{
+  await PersistentStorage.relaunchDataBase();
   final prefs = await PersistentStorage.getInstance();
+  var settings = await Settings.getInstance();
+  print('path => '+settings.smsPath);
   final previous = [...getResults(prefs)];
-  final network = Network();
-  late final bool success;  
-  try {
-    success = await network.registerNumber(message.address, message.body);
-  } catch (e) {
-    success = false;
+  final network = Network(settings.baseUrl);
+  final bool success = await network.registerNumber(message.address, message.body);  
+  if(!success)
     await sendIfError(Telephony.backgroundInstance);
-  }
   final newResult = RegisterResult.fromSMS(message, success);
   await saveResults([...previous,newResult]);
 }
